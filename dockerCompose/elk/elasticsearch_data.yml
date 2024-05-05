@@ -1,0 +1,45 @@
+cluster.name: es-docker-cluster
+node.name: hostname03
+node.master: true
+node.data: true
+cluster.initial_master_nodes: ["IP1","IP2","IP3"]
+discovery.seed_hosts: ["IP1","IP2","IP3"]
+
+#set memory lock
+#bootstrap.memory_lock: true
+#cluster.routing.allocation.enable: true
+#cluster.routing.rebalance.enable: true
+
+#path.data: /opt/elasticsearch/data/
+#path.logs: /opt/elasticsearch/logs/
+# Set the host to 0.0.0.0 to enable network access to all network cards of the physical machine
+# network.bind_host Set to allow control over the hosts that different network components will bind to
+network.bind_host: 0.0.0.0
+network.host: 0.0.0.0
+#http.port: 9200
+#http.cors.enabled: true
+#http.cors.allow-origin: "*"
+
+#xpack.security.enabled: true
+#xpack.security.transport.ssl.enabled: true
+#xpack.security.transport.ssl.verification_mode: none
+#xpack.security.transport.ssl.keystore.path: /opt/elasticsearch/config/certs/elastic-certificates.p12
+#xpack.security.transport.ssl.truststore.path: /opt/elasticsearch/config/certs/elastic-certificates.p12
+#xpack.security.transport.ssl.supported_protocols: TLSv1.2
+#xpack.security.http.ssl.verification_mode: none
+#xpack.security.http.ssl.keystore.path: /opt/elasticsearch/config/certs/http.p12
+#xpack.security.http.ssl.enabled: true
+
+##xpack.security.http.ssl.certificate: "/sec/elasticsearch-7.6.2/config/certs/cert.pem"
+##xpack.security.http.ssl.key: "/sec/elasticsearch-7.6.2/config/certs/cert.key"
+##xpack.security.http.ssl.certificate_authorities: [ "/sec/elasticsearch-7.6.2/config/certs/cert.pem" ]
+#xpack.security.http.ssl.supported_protocols: TLSv1.2
+
+discovery.zen.minimum_master_nodes: 2
+
+thread_pool:
+  write:
+    size: 5
+    queue_size: 500
+
+cluster.max_shards_per_node: 3000

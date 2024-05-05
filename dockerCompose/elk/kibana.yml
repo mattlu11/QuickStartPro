@@ -1,0 +1,11 @@
+server.port: 5601
+server.host: "IP2"
+elasticsearch.hosts: ["http://IP1:9200","http://IP2:9200","http://IP3:9200"]
+#elasticsearch.username: "kibana"
+##elasticsearch.password: "password$"
+#elasticsearch.ssl.verificationMode: none
+#logging.dest: /usr/local/kibana/logs/kibana.log
+i18n.locale: "zh-CN"
+elasticsearch.requestTimeout: 30000
+#elasticsearch.username: "kibana"
+#elasticsearch.password: "password"
