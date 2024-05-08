@@ -1,0 +1,88 @@
+- name: Install chrony
+  command: yum install chrony -y
+- name: Modify configuration of chrony
+  command: sed -i "s/server/#server/g" /etc/chrony.conf
+- name: Add Time Server
+  command: sed -i '1 ipool <Time Server> iburst' /etc/chrony.conf
+- name: Restart the chronyd service
+  command: systemctl restart chronyd.service
+- name: Chronyd service startup
+  command: systemctl enable chronyd.service
+- name: Modify host configuration
+  template: src=host.j2 dest=/etc/hosts
+- name: Add Octopus yum resource
+  copy: src=ceph.repo dest=/etc/yum.repos.d/ceph.repo mode=644
+- name: Add cephadm 
+  copy: src=cephadm dest=/root/cephadm
+  when:
+    - inventory_hostname == groups['cephadmin'][0]
+- name: Add permission
+  command: chmod +x cephadm
+  when:
+    - inventory_hostname == groups['cephadmin'][0]
+- name: Add docker resource
+  copy: src=docker-ce.repo dest=/etc/yum.repos.d/docker-ce.repo mode=644
+- name: Installing System Tools
+  command: yum install -y yum-utils device-mapper-persistent-data lvm2
+- name: Install docker
+  command: yum install docker-ce -y
+- name: Enable docker service
+  command: systemctl enable docker
+- name: Restart docker service
+  command: systemctl restart docker
+- name: Install python3
+  command: yum install python3 -y
+- name: cephadm install
+  command: /root/cephadm install
+  when:
+    - inventory_hostname == groups['cephadmin'][0]
+- name: create ceph folder
+  command: mkdir -p /etc/ceph
+  when: 
+    - inventory_hostname == groups['cephadmin'][0]
+- name: copy cephadm script
+  copy: src=cephinstall.sh dest=/root/cephinstall.sh mode=755
+  when: 
+    - inventory_hostname == groups['cephadmin'][0]
+- name: Modify /usr/sbin/cephadm proxy
+  command: sed -i "s/<Your proxy>\/proxy-quay.io/g" /usr/sbin/cephadm
+  when: 
+    - inventory_hostname == groups['cephadmin'][0]
+- name: Execute script（Specify management nodes）
+  command: sh /root/cephinstall.sh
+  when: 
+    - inventory_hostname == groups['cephadmin'][0]
+- name: Install tools
+  command: yum install epel-release liboath0 -y
+  when: 
+    - inventory_hostname == groups['cephadmin'][0]
+- name: Install ceph-common
+  command: yum install ceph-common -y
+  when: 
+    - inventory_hostname == groups['cephadmin'][0]
+- name: Add default password file
+  copy: src=passwd.txt dest=/root/passwd.txt mode=644
+  when: 
+    - inventory_hostname == groups['cephadmin'][0]
+- name: Modify dashboard Password
+  command: ceph dashboard set-login-credentials admin -i /root/passwd.txt
+  when: 
+    - inventory_hostname == groups['cephadmin'][0]
+- name: Copy ceph.pub to the root
+  command: cp /etc/ceph/ceph.pub /root/
+  when: 
+    - inventory_hostname == groups['cephadmin'][0]
+- name: Install rsync
+  command: yum install rsync -y
+  when: 
+    - inventory_hostname == groups['cephadmin'][0]
+# - name: Distribute public key
+#   copy:
+#     src: /root/ceph.pub
+#     dest: /tmp/ceph.pub
+#     checksum: true
+#     remote_src: true
+#   delegate_to: "{{ item }}"
+#   loop: "{{ query('inventory_hostnames', pxe_hosts | default('cephnode1')) }}"
+#   when: 
+#     - inventory_hostname == groups['cephadmin'][0]

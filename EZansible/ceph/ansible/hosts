@@ -1,0 +1,9 @@
+[cephadmin]
+IP1 node_name=ceph-01
+[cephnode1]
+IP2 node_name=ceph-02
+IP3 node_name=ceph-03
+
+[ceph:children]
+cephadmin
+cephnode1
